@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, useRef } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
 
+const Count_indput_box = 5;
 function App() {
-  const [count, setCount] = useState(0)
+  const [indexarr, setindexarr] = useState(
+    new Array(Count_indput_box).fill("")
+  );
+
+  const refarr = useRef([]);
+
+  useEffect(() => {
+    refarr.current[0]?.focus();
+  }, []);
+
+  const handlechange = (value, index) => {
+    if (isNaN(value)) return;
+
+    const newArray = [...indexarr];
+    newArray[index] = value.slice(-1);
+    setindexarr(newArray);
+
+    if (value && index < Count_indput_box - 1) {
+      refarr.current[index + 1]?.focus();
+    }
+  };
+
+  const handlekey = (e, index) => {
+    if (!e.target.value && e.key === "Backspace") {
+      if (index > 0) {
+        refarr.current[index - 1]?.focus();
+      }
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="body">
+      <h1 className="title">Validate OTP</h1>
+      {indexarr.map((input, index) => (
+        <input
+          key={index}
+          className="inputbox"
+          type="tel"
+          value={indexarr[index]}
+          ref={(input) => (refarr.current[index] = input)}
+          onKeyDown={(e) => handlekey(e, index)}
+          onChange={(e) => handlechange(e.target.value, index)}
+        />
+      ))}
+    </div>
+  );
 }
 
-export default App
+export default App;
